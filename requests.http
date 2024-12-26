@@ -1,0 +1,51 @@
+### Variáveis de ambiente
+@baseUrl = http://localhost:3000
+
+### Health Check
+# @name healthCheck
+GET {{baseUrl}}/ HTTP/1.1
+Content-Type: application/json
+
+### Criar Pedido
+# @name createOrder
+POST {{baseUrl}}/orders HTTP/1.1
+Content-Type: application/json
+
+{
+    "customer": {
+        "name": "John Doe",
+        "email": "john@example.com"
+    },
+    "items": [
+        {
+            "productId": "123",
+            "quantity": 2,
+            "price": 29.99
+        },
+        {
+            "productId": "456",
+            "quantity": 1,
+            "price": 49.99
+        }
+    ],
+    "totalAmount": 109.97
+}
+
+### Buscar Pedido por ID
+# @name getOrder
+GET {{baseUrl}}/orders/{{createOrder.response.body.orderId}} HTTP/1.1
+Content-Type: application/json
+
+### Listar Pedidos
+# @name listOrders
+GET {{baseUrl}}/orders HTTP/1.1
+Content-Type: application/json
+
+### Atualizar Status do Pedido
+# @name updateOrderStatus
+PATCH {{baseUrl}}/orders/{{createOrder.response.body.orderId}}/status HTTP/1.1
+Content-Type: application/json
+
+{
+    "status": "PROCESSING"
+} 
