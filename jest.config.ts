@@ -9,7 +9,7 @@ const config: Config = {
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
-  setupFiles: ['<rootDir>/test/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
 };
 
 export default config;
