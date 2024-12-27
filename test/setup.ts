@@ -1,9 +1,11 @@
-import dotenv from 'dotenv';
+import { beforeAll, afterAll } from '@jest/globals';
+import { createDatabase } from '../scripts/create-database';
 import { db, queryClient } from '../src/db';
-import { customers, orders } from '../src/db/schema';
+import { orders, customers } from '../src/db/schema';
 
-// Load environment variables
-dotenv.config({ path: '.env.test' });
+beforeAll(async () => {
+  await createDatabase();
+});
 
 // Clean up database after all tests
 afterAll(async () => {
