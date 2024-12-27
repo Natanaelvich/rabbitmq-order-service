@@ -13,12 +13,16 @@ export const customers = pgTable('customers', {
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  customerId: integer('customer_id').references(() => customers.id).notNull(),
-  items: json('items').notNull().$type<{
-    productId: string;
-    quantity: number;
-    price: number;
-  }[]>(),
+  customerId: integer('customer_id')
+    .references(() => customers.id)
+    .notNull(),
+  items: json('items').notNull().$type<
+    {
+      productId: string;
+      quantity: number;
+      price: number;
+    }[]
+  >(),
   totalAmount: decimal('total_amount', { precision: 10, scale: 2 }).notNull(),
   status: varchar('status', { length: 20 }).notNull().default('PENDING'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -51,4 +55,4 @@ export const selectOrderSchema = createSelectSchema(orders);
 export type Customer = InferModel<typeof customers>;
 export type NewCustomer = InferModel<typeof customers, 'insert'>;
 export type Order = InferModel<typeof orders>;
-export type NewOrder = InferModel<typeof orders, 'insert'>; 
+export type NewOrder = InferModel<typeof orders, 'insert'>;

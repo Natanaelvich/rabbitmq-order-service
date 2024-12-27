@@ -14,11 +14,11 @@ const router = Router();
 app.use(express.json());
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Something went wrong!',
-    message: err.message 
+    message: err.message,
   });
 });
 
@@ -37,7 +37,7 @@ router.post('/customers', (async (req: Request, res: Response) => {
 // Get Customer
 router.get('/customers/:id', (async (req: Request, res: Response) => {
   const customer = await db.query.customers.findFirst({
-    where: eq(customers.id, parseInt(req.params.id))
+    where: eq(customers.id, parseInt(req.params.id)),
   });
 
   if (!customer) {
@@ -50,10 +50,13 @@ router.get('/customers/:id', (async (req: Request, res: Response) => {
 // Create Order
 router.post('/orders', (async (req: Request, res: Response) => {
   const validatedData = insertOrderSchema.parse(req.body);
-  const order = await db.insert(orders).values({
-    ...validatedData,
-    totalAmount: validatedData.totalAmount.toString() // Convert number to string for decimal type
-  }).returning();
+  const order = await db
+    .insert(orders)
+    .values({
+      ...validatedData,
+      totalAmount: validatedData.totalAmount.toString(), // Convert number to string for decimal type
+    })
+    .returning();
   res.status(201).json(order[0]);
 }) as RequestHandler);
 
@@ -62,8 +65,8 @@ router.get('/orders/:id', (async (req: Request, res: Response) => {
   const order = await db.query.orders.findFirst({
     where: eq(orders.id, parseInt(req.params.id)),
     with: {
-      customer: true
-    }
+      customer: true,
+    },
   });
 
   if (!order) {
@@ -77,8 +80,8 @@ router.get('/orders/:id', (async (req: Request, res: Response) => {
 router.get('/orders', (async (_req: Request, res: Response) => {
   const allOrders = await db.query.orders.findMany({
     with: {
-      customer: true
-    }
+      customer: true,
+    },
   });
   res.json(allOrders);
 }) as RequestHandler);
@@ -91,10 +94,11 @@ router.patch('/orders/:id/status', (async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Invalid status' });
   }
 
-  const order = await db.update(orders)
-    .set({ 
+  const order = await db
+    .update(orders)
+    .set({
       status,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     })
     .where(eq(orders.id, parseInt(req.params.id)))
     .returning();
@@ -105,7 +109,7 @@ router.patch('/orders/:id/status', (async (req: Request, res: Response) => {
 
   res.json({
     message: 'Order status updated successfully',
-    order: order[0]
+    order: order[0],
   });
 }) as RequestHandler);
 
@@ -115,4 +119,4 @@ const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
-}); 
+});
