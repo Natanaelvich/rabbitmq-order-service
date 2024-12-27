@@ -1,13 +1,17 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 import * as schema from './schema';
 
 const connectionString =
   process.env.DATABASE_URL || 'postgres://admin:admin123@localhost:5432/orders_db';
 
-// Connection for migrations
-export const migrationClient = postgres(connectionString, { max: 1 });
+// Create a PostgreSQL pool
+const pool = new Pool({
+  connectionString,
+});
 
-// Connection for queries
-const queryClient = postgres(connectionString);
-export const db = drizzle(queryClient, { schema });
+// Export the pool for migrations and direct queries if needed
+export const queryClient = pool;
+
+// Create a drizzle instance
+export const db = drizzle(pool, { schema });
